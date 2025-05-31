@@ -1,9 +1,7 @@
 name: KoboToolbox Sync
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Every hour
-  workflow_dispatch:     # Manual trigger
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -11,6 +9,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -20,16 +20,18 @@ jobs:
       - name: Install dependencies
         run: pip install requests pytz
 
+      - name: Debug - Show environment info
+        run: |
+          echo "Python path: $(which python)"
+          echo "Python version: $(python --version)"
+          echo "Repo: $GITHUB_REPOSITORY"
+
       - name: Run KoboToolbox Sync
         env:
           KOBO_API_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        run: python kobo_sync.py
-
-      - name: Commit changes
         run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git add .
-          git commit -am "Automated sync: $(date -u)"
-          git push
+          echo "KOBO_TOKEN length: ${#KOBO_API_TOKEN}"
+          echo "GH_TOKEN length: ${#GITHUB_TOKEN}"
+          python -c "import os; print('Current dir:', os.listdir())"
+          python kobo_sync.py

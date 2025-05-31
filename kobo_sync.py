@@ -52,6 +52,9 @@ def commit_to_github(filename):
             sha = response.json().get('sha')
     except:
         pass
+        # Add to your Python script
+import os
+os.chmod(filename, 0o777)  # Before commit_to_github()
     
     # Prepare commit
     with open(filename, 'rb') as f:

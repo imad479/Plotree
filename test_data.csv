@@ -1,0 +1,526 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+
+      
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="robots" content="NONE,NOARCHIVE" />
+      
+
+      <title>KoboToolbox Form Building API</title>
+
+      
+        
+          <link rel="stylesheet" type="text/css" href="/static/rest_framework/css/bootstrap.min.css"/>
+          <link rel="stylesheet" type="text/css" href="/static/rest_framework/css/bootstrap-tweaks.css"/>
+        
+
+        <link rel="stylesheet" type="text/css" href="/static/rest_framework/css/prettify.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/rest_framework/css/default.css"/>
+        <style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #008800; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #AA22FF; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #008800; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #008800; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #008800 } /* Comment.Preproc */
+.highlight .cpf { color: #008800; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #008800; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #008800; font-weight: bold } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #AA22FF; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #AA22FF; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #AA22FF; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #AA22FF } /* Keyword.Pseudo */
+.highlight .kr { color: #AA22FF; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #00BB00; font-weight: bold } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BB4444 } /* Literal.String */
+.highlight .na { color: #BB4444 } /* Name.Attribute */
+.highlight .nb { color: #AA22FF } /* Name.Builtin */
+.highlight .nc { color: #0000FF } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #00A000 } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #B8860B } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BB4444 } /* Literal.String.Affix */
+.highlight .sb { color: #BB4444 } /* Literal.String.Backtick */
+.highlight .sc { color: #BB4444 } /* Literal.String.Char */
+.highlight .dl { color: #BB4444 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BB4444; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BB4444 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BB4444 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BB4444 } /* Literal.String.Single */
+.highlight .ss { color: #B8860B } /* Literal.String.Symbol */
+.highlight .bp { color: #AA22FF } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #00A000 } /* Name.Function.Magic */
+.highlight .vc { color: #B8860B } /* Name.Variable.Class */
+.highlight .vg { color: #B8860B } /* Name.Variable.Global */
+.highlight .vi { color: #B8860B } /* Name.Variable.Instance */
+.highlight .vm { color: #B8860B } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
+      
+
+    
+  </head>
+
+  
+  <body class="">
+
+    <div class="wrapper">
+      
+        <div class="navbar navbar-static-top navbar-inverse"
+             role="navigation" aria-label="navbar">
+          <div class="container">
+            <span>
+              
+    <a class='navbar-brand' rel="nofollow" href='http://kobotoolbox.org/'>
+        KoboToolbox Form Building API
+    </a>
+
+            </span>
+            <ul class="nav navbar-nav pull-right">
+              
+                
+                  <li class="navbar-text">plotree</li>
+                
+              
+            </ul>
+          </div>
+        </div>
+      
+
+      <div class="container">
+        
+          <ul class="breadcrumb">
+            
+              
+                <li><a href="/api/v2/">Api Root</a></li>
+              
+            
+              
+                <li><a href="/api/v2/assets/">Asset List</a></li>
+              
+            
+              
+                <li><a href="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/">Asset Instance</a></li>
+              
+            
+              
+                <li class="active"><a href="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv">Data List</a></li>
+              
+            
+          </ul>
+        
+
+        <!-- Content -->
+        <div id="content" role="main" aria-label="content">
+          
+
+          <div class="region"  aria-label="request form">
+          
+
+          
+            <form id="get-form" class="pull-right">
+              <fieldset>
+                
+                  <div class="btn-group format-selection">
+                    <a class="btn btn-primary js-tooltip" href="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv" rel="nofollow" title="Make a GET request on the Data List resource">GET</a>
+
+                    <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
+                      <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      
+                        <li>
+                          <a class="js-tooltip format-option" href="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv?format=api" rel="nofollow" title="Make a GET request on the Data List resource with the format set to `api`">api</a>
+                        </li>
+                      
+                        <li>
+                          <a class="js-tooltip format-option" href="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv?format=json" rel="nofollow" title="Make a GET request on the Data List resource with the format set to `json`">json</a>
+                        </li>
+                      
+                        <li>
+                          <a class="js-tooltip format-option" href="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv?format=geojson" rel="nofollow" title="Make a GET request on the Data List resource with the format set to `geojson`">geojson</a>
+                        </li>
+                      
+                        <li>
+                          <a class="js-tooltip format-option" href="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv?format=xml" rel="nofollow" title="Make a GET request on the Data List resource with the format set to `xml`">xml</a>
+                        </li>
+                      
+                    </ul>
+                  </div>
+                
+              </fieldset>
+            </form>
+          
+
+          
+            <form class="button-form" action="/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv" data-method="OPTIONS">
+              <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the Data List resource">OPTIONS</button>
+            </form>
+          
+
+          
+
+          
+            <div class="dropdown" style="float: right; margin-right: 10px">
+              <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                Extra Actions
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
+                
+                <li><a href="https://kf.kobotoolbox.org/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data/bulk.csv">Bulk</a></li>
+                
+                <li><a href="https://kf.kobotoolbox.org/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data/validation_statuses.csv">Validation statuses</a></li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+          
+          </div>
+
+            <div class="content-main" role="main"  aria-label="main content">
+              <div class="page-header">
+                <h1>Data List</h1>
+              </div>
+              <div class="pull-left">
+                
+                  <h3 id="list-of-submissions-for-a-specific-asset">List of submissions for a specific asset</h3>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/
+</pre>
+
+<p>By default, JSON format is used, but XML and GeoJSON are also available:</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data.xml
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data.geojson
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data.json
+</pre>
+
+<p>or</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/?format=xml
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/?format=geojson
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/?format=json
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/
+</code></pre>
+</blockquote>
+<h3 id="pagination">Pagination</h3>
+<p>Two parameters can be used to control pagination.</p>
+<ul>
+<li><code>start</code>: Index (zero-based) from which the results start</li>
+<li><code>limit</code>: Number of results per page <span class='label label-warning'>Maximum results per page is <strong>30000</strong></span></li>
+</ul>
+<blockquote>
+<p>Example: The first ten results</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/?start=0&amp;limit=10
+</code></pre>
+</blockquote>
+<h3 id="query-submitted-data">Query submitted data</h3>
+<p>Provides a list of submitted data for a specific form. Use <code>query</code>
+parameter to apply form data specific, see
+<a href="http://docs.mongodb.org/manual/reference/operator/query/">
+http://docs.mongodb.org/manual/reference/operator/query/</a>.</p>
+<p>For more details see
+<a href="https://github.com/SEL-Columbia/formhub/wiki/Formhub-Access-Points-(API)#api-parameters">API Parameters</a>.
+<span class='label label-warning'>API parameter <code>count</code> is not implemented</span></p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/?query={"field":"value"}</b>
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/?query={"field":{"op": "value"}}"</b>
+</pre>
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET 'https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/?query={"__version__": "vWvkKzNE8xCtfApJvabfjG"}'
+  curl -X GET 'https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/?query={"_submission_time": {"$gt": "2019-09-01T01:02:03"}}'
+</code></pre>
+</blockquote>
+<h3 id="about-the-geojson-format">About the GeoJSON format</h3>
+<p>Requesting the <code>geojson</code> format returns a <code>FeatureCollection</code> where each
+submission is a <code>Feature</code>. If your form has multiple geographic questions,
+use the <code>geo_question_name</code> query parameter to determine which question's
+responses populate the <code>geometry</code> for each <code>Feature</code>; otherwise, the first
+geographic question is used.  All question/response pairs are included in
+the <code>properties</code> of each <code>Feature</code>, but <em>repeating groups are omitted</em>.</p>
+<p>Question types are mapped to GeoJSON geometry types as follows:</p>
+<ul>
+<li><code>geopoint</code> to <code>Point</code>;</li>
+<li><code>geotrace</code> to <code>LineString</code>;</li>
+<li><code>geoshape</code> to <code>Polygon</code>.</li>
+</ul>
+<h3 id="crud">CRUD</h3>
+<ul>
+<li><code>uid</code> - is the unique identifier of a specific asset</li>
+<li><code>id</code> - is the unique identifier of a specific submission</li>
+</ul>
+<p><strong>It is not allowed to create submissions with <code>kpi</code>'s API as this is handled by <code>kobocat</code>'s <code>/submission</code> endpoint</strong></p>
+<p>Retrieves a specific submission</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/
+</pre>
+
+<p>It is also possible to specify the format.</p>
+<p><sup><em></sup><code>id</code> can be the primary key of the submission or its <code>uuid</code>.
+Please note that using the <code>uuid</code> may match </em><em>several</em>* submissions, only
+the first match will be returned.</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>.xml
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>.json
+</pre>
+
+<p>or</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/<code>{id}</code>/?format=xml
+<b>GET</b> /api/v2/assets/<code>{asset_uid}</code>/data/<code>{id}</code>/?format=json
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/
+</code></pre>
+</blockquote>
+<p>Deletes current submission</p>
+<pre class="prettyprint">
+<b>DELETE</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X DELETE https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/
+</code></pre>
+</blockquote>
+<p>Update current submission</p>
+<p><em>It is not possible to update a submission directly with <code>kpi</code>'s API as this is handled by <code>kobocat</code>'s <code>/submission</code> endpoint.
+Instead, it returns the URL where the instance can be opened in Enketo for editing in the UI.</em></p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/enketo/edit/?return_url=false
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/enketo/edit/?return_url=false
+</code></pre>
+</blockquote>
+<p>To redirect (HTTP 302) to the Enketo editing URL, use the <code>…/enketo/redirect/edit/</code> endpoint:</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/enketo/redirect/edit/?return_url=false
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/enketo/redirect/edit/?return_url=false
+</code></pre>
+</blockquote>
+<p>View-only version of current submission</p>
+<p>Return a URL to display the filled submission in view-only mode in the Enketo UI.</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/enketo/view/
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/enketo/view/
+</code></pre>
+</blockquote>
+<p>To redirect (HTTP 302) to the Enketo viewing URL, use the <code>…/enketo/redirect/view/</code> endpoint:</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/enketo/redirect/view/?return_url=false
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/enketo/redirect/view/?return_url=false
+</code></pre>
+</blockquote>
+<h4 id="duplicate-submission">Duplicate submission</h4>
+<p>Duplicates the data of a submission</p>
+<pre class="prettyprint">
+<b>POST</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/duplicate/
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X POST https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/duplicate/
+</code></pre>
+</blockquote>
+<h4 id="validation-statuses">Validation statuses</h4>
+<p>Retrieves the validation status of a submission.</p>
+<pre class="prettyprint">
+<b>GET</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/validation_status/
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X GET https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/validation_status/
+</code></pre>
+</blockquote>
+<p>Update the validation of a submission</p>
+<pre class="prettyprint">
+<b>PATCH</b> /api/v2/assets/<code>{uid}</code>/data/<code>{id}</code>/validation_status/
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X PATCH https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/234/validation_status/
+</code></pre>
+<p><strong>Payload</strong></p>
+<pre><code>   {
+      "validation_status.uid": &lt;validation_status&gt;
+   }
+</code></pre>
+</blockquote>
+<p>where <code>&lt;validation_status&gt;</code> is a string and can be one of these values:</p>
+<ul>
+<li><code>validation_status_approved</code></li>
+<li><code>validation_status_not_approved</code></li>
+<li><code>validation_status_on_hold</code></li>
+</ul>
+<p>Bulk update</p>
+<pre class="prettyprint">
+<b>PATCH</b> /api/v2/assets/<code>{uid}</code>/data/validation_statuses/
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X PATCH https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/validation_statuses/
+</code></pre>
+<p><strong>Payload</strong></p>
+<pre><code>   {
+      "submission_ids": [{integer}],
+      "validation_status.uid": &lt;validation_status&gt;
+   }
+</code></pre>
+</blockquote>
+<h4 id="bulk-updating-of-submissions">Bulk updating of submissions</h4>
+<pre class="prettyprint">
+<b>PATCH</b> /api/v2/assets/<code>{uid}</code>/data/bulk/
+</pre>
+
+<blockquote>
+<p>Example</p>
+<pre><code>  curl -X PATCH https://[kpi]/api/v2/assets/aSAvYreNzVEkrWg5Gdcvg/data/bulk/
+</code></pre>
+<p><strong>Payload</strong></p>
+<pre><code>   {
+      "submission_ids": [{integer}],
+      "data": {
+          &lt;field_to_update_1&gt;: &lt;value_1&gt;,
+          &lt;field_to_update_2&gt;: &lt;value_2&gt;,
+          &lt;field_to_update_n&gt;: &lt;value_n&gt;
+      }
+   }
+</code></pre>
+</blockquote>
+<p>where <code>&lt;field_to_update_n&gt;</code> is a string and should be an existing XML field value of the submissions.
+If <code>&lt;field_to_update_n&gt;</code> is part of a group or nested group, the field must follow the group hierarchy
+structure, i.e.:</p>
+<p>If the field is within a group called <code>group_1</code>, the field name is <code>question_1</code> and the new value is <code>new value</code>,
+the payload should contain an item with the following structure:</p>
+<pre class="prettyprint">
+"group_1/question_1": "new value"
+</pre>
+
+<p>Similarly, if there are <code>N</code> nested groups, the structure will be:</p>
+<pre class="prettyprint">
+"group_1/sub_group_1/.../sub_group_n/question_1": "new value"
+</pre>
+
+<h4 id="current-endpoint">CURRENT ENDPOINT</h4>
+                
+              </div>
+
+              
+
+              <div class="request-info" aria-label="request info">
+                <pre class="prettyprint"><b>GET</b> /api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv</pre>
+              </div>
+
+              <div class="response-info" aria-label="response info">
+                <pre class="prettyprint"><span class="meta nocode"><b>HTTP 404 Not Found</b>
+<b>Allow:</b> <span class="lit">GET, HEAD, OPTIONS</span>
+<b>Content-Type:</b> <span class="lit">application/json</span>
+<b>Vary:</b> <span class="lit">Accept</span>
+
+</span>{
+    &quot;detail&quot;: &quot;Not found.&quot;
+}</pre>
+              </div>
+            </div>
+
+            
+              
+
+              
+            
+          
+        </div><!-- /.content -->
+      </div><!-- /.container -->
+    </div><!-- ./wrapper -->
+
+    
+
+    
+      <script type="application/json" id="drf_csrf">
+        {
+          "csrfHeaderName": "X-CSRFTOKEN",
+          "csrfToken": "mQ4c1rpm8ytfkowgdKUgU5GfUARtHw6v5u1bhJTBdADSAbdprFNRe2u1Ey4G1Hn5"
+        }
+      </script>
+      <script src="/static/rest_framework/js/jquery-3.7.1.min.js"></script>
+      <script src="/static/rest_framework/js/ajax-form.js"></script>
+      <script src="/static/rest_framework/js/csrf.js"></script>
+      <script src="/static/rest_framework/js/bootstrap.min.js"></script>
+      <script src="/static/rest_framework/js/prettify-min.js"></script>
+      <script src="/static/rest_framework/js/default.js"></script>
+      <script src="/static/rest_framework/js/load-ajax-form.js"></script>
+    
+
+  </body>
+  
+</html>

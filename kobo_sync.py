@@ -40,9 +40,11 @@ def get_all_forms():
         return []
 
 # Clear previous CSVs
-for f in glob.glob("*.csv"):
-    os.remove(f)
-    print(f"🧹 Removed old file: {f}")
+# Replace the cleanup section with:
+print("Keeping previous CSV files")
+# Remove this block:
+# for f in glob.glob("*.csv"):
+#    os.remove(f)
 
 # Main sync process
 forms = get_all_forms()

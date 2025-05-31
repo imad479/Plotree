@@ -36,3 +36,6 @@ jobs:
           commit_message: "Automated sync: ${{ github.run_number }}"
           branch: main
          token: ${{ secrets.GH_PAT }}
+# Add at the end of kobo_sync.py
+import time
+time.sleep(5)  # Ensure filesystem registers changes

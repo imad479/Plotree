@@ -1,7 +1,9 @@
 name: KoboToolbox Sync
 
 on:
-  workflow_dispatch: # Manual trigger only for now
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:     # Manual trigger
 
 jobs:
   sync:
@@ -19,39 +21,31 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install requests pytz
 
-      - name: Test Kobo API access
+      - name: Run KoboToolbox Sync
         env:
-          KOBO_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
-        run: |
-          echo "Testing Kobo API..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Token $KOBO_TOKEN" "https://kf.kobotoolbox.org/api/v2/assets/")
-          if [ "$response" -eq 200 ]; then
-            echo "✅ API access successful"
-          else
-            echo "❌ API failed with status: $response"
-            exit 1
-          fi
+          KOBO_API_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
+        run: python kobo_sync.py
 
-      - name: Run minimal sync test
-        env:
-          KOBO_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
+      - name: Verify files to commit
         run: |
-          echo "Downloading test file..."
-          curl -H "Authorization: Token $KOBO_TOKEN" \
-          "https://kf.kobotoolbox.org/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv" \
-          -o test_data.csv
-          
-          echo "File created:"
-          ls -lh test_data.csv
-          echo "First 3 lines:"
-          head -3 test_data.csv || echo "Empty file"
+          echo "Files in directory:"
+          ls -la
+          echo "CSV files:"
+          ls *.csv || echo "No CSV files found"
+          echo "Git status:"
+          git status
 
-      - name: Commit test file
+      - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Add test CSV"
+          commit_message: "Automated sync: ${{ github.run_number }}"
           branch: main
           add: "*.csv"
+          commit_user_name: GitHub Actions
+          commit_user_email: actions@github.com
           token: ${{ secrets.GH_PAT }}
+          skip_fetch: true
+          skip_checkout: false
+          file_pattern: "*.csv"

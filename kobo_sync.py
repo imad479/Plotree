@@ -35,5 +35,4 @@ jobs:
         with:
           commit_message: "Automated sync: ${{ github.run_number }}"
           branch: main
-
-          token: ${{ secrets.GH_PAT }}
+         token: ${{ secrets.GH_PAT }}

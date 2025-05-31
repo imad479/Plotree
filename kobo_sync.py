@@ -56,3 +56,6 @@ for form in forms:
 
 print(f"\n✅ Sync completed at {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
 print("=== SYNC FINISHED ===")
+# Add to end of kobo_sync.py
+print("Final directory contents:")
+print(os.listdir())

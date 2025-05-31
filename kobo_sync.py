@@ -8,7 +8,7 @@ import pytz
 KOBO_TOKEN = os.environ['KOBO_API_TOKEN']
 GITHUB_TOKEN = os.environ['GITHUB_TOKEN']
 REPO_OWNER = "imad479"
-REPO_NAME = "kobo-tableau-sync"
+REPO_NAME = "Plotree"
 BRANCH = "main"
 
 # KoboToolbox API Endpoints

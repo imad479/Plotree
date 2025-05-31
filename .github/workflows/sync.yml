@@ -1,51 +1,105 @@
 name: KoboToolbox Sync
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Every hour
-  workflow_dispatch:     # Manual trigger
+  workflow_dispatch: # Start with manual triggers only
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      # Step 1: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
+          persist-credentials: true
           fetch-depth: 0
-
-      - name: Set up Python
+      
+      # Step 2: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install requests pytz
-
-      - name: Run KoboToolbox Sync
+      
+      # Step 3: Install dependencies
+      - name: Install required packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pytz
+      
+      # Step 4: Create and run sync script
+      - name: Create and execute sync script
         env:
           KOBO_API_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
-        run: python kobo_sync.py
-
-      - name: Verify files to commit
         run: |
-          echo "Files in directory:"
-          ls -la
-          echo "CSV files:"
-          ls *.csv || echo "No CSV files found"
-          echo "Git status:"
-          git status
-
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Automated sync: ${{ github.run_number }}"
-          branch: main
-          add: "*.csv"
-          commit_user_name: GitHub Actions
-          commit_user_email: actions@github.com
-          token: ${{ secrets.GH_PAT }}
-          skip_fetch: true
-          skip_checkout: false
-          file_pattern: "*.csv"
+          cat << 'EOF' > kobo_sync.py
+          import requests
+          import os
+          import json
+          from datetime import datetime, timezone
+          
+          print("=== Kobo Sync Script ===")
+          print("Environment variables:", os.environ.keys())
+          
+          # Configuration
+          KOBO_TOKEN = os.environ.get('KOBO_API_TOKEN')
+          BASE_URL = "https://kf.kobotoolbox.org"
+          
+          if not KOBO_TOKEN:
+              print("❌ ERROR: KOBO_API_TOKEN not found in environment")
+              exit(1)
+              
+          print("✅ KOBO_API_TOKEN found")
+          
+          # Get forms
+          try:
+              headers = {"Authorization": f"Token {KOBO_TOKEN}"}
+              response = requests.get(f"{BASE_URL}/api/v2/assets/", headers=headers)
+              print(f"API Status: {response.status_code}")
+              
+              if response.status_code == 200:
+                  forms = response.json().get('results', [])
+                  print(f"Found {len(forms)} forms")
+                  
+                  # Process first form only for test
+                  if forms:
+                      form = forms[0]
+                      asset_uid = form['uid']
+                      form_name = form['name'].replace(' ', '_')
+                      
+                      # Download data
+                      csv_url = f"{BASE_URL}/api/v2/assets/{asset_uid}/data.csv"
+                      csv_response = requests.get(csv_url, headers=headers)
+                      
+                      if csv_response.status_code == 200:
+                          filename = f"{form_name}.csv"
+                          with open(filename, 'wb') as f:
+                              f.write(csv_response.content)
+                          print(f"✅ Created {filename} ({len(csv_response.content)} bytes)")
+                          print("::set-output name=filename::" + filename)
+                      else:
+                          print(f"❌ CSV download failed: {csv_response.status_code}")
+                  else:
+                      print("⚠️ No forms found")
+              else:
+                  print(f"❌ API request failed: {response.text}")
+          except Exception as e:
+              print(f"🔥 Critical error: {str(e)}")
+          EOF
+          
+          python kobo_sync.py
+      
+      # Step 5: Manual commit as fallback
+      - name: Commit files
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add .
+          
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Automated sync: $(date -u)"
+            git push origin HEAD:${{ github.ref }}
+          else
+            echo "No changes to commit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}

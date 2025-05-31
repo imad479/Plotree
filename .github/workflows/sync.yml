@@ -1,0 +1,35 @@
+name: KoboToolbox Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:     # Manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests pytz
+
+      - name: Run KoboToolbox Sync
+        env:
+          KOBO_API_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: python kobo_sync.py
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add .
+          git commit -am "Automated sync: $(date -u)"
+          git push

@@ -1,7 +1,7 @@
 name: KoboToolbox Sync
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Manual trigger only for now
 
 jobs:
   sync:
@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -18,21 +21,37 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run KoboToolbox Sync (Debug)
+      - name: Test Kobo API access
         env:
-          KOBO_API_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
-        run: python kobo_sync.py
-
-      - name: Debug - List all files
+          KOBO_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
         run: |
-          ls -la
-          echo "CSV files:"
-          ls *.csv || echo "No CSV files found"
+          echo "Testing Kobo API..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Token $KOBO_TOKEN" "https://kf.kobotoolbox.org/api/v2/assets/")
+          if [ "$response" -eq 200 ]; then
+            echo "✅ API access successful"
+          else
+            echo "❌ API failed with status: $response"
+            exit 1
+          fi
 
-      - name: Commit and push changes
-        if: success()
+      - name: Run minimal sync test
+        env:
+          KOBO_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
+        run: |
+          echo "Downloading test file..."
+          curl -H "Authorization: Token $KOBO_TOKEN" \
+          "https://kf.kobotoolbox.org/api/v2/assets/awsrgDXSJeyN6GDn8U2Qmm/data.csv" \
+          -o test_data.csv
+          
+          echo "File created:"
+          ls -lh test_data.csv
+          echo "First 3 lines:"
+          head -3 test_data.csv || echo "Empty file"
+
+      - name: Commit test file
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Automated sync: ${{ github.run_number }}"
+          commit_message: "Add test CSV"
           branch: main
+          add: "*.csv"
           token: ${{ secrets.GH_PAT }}

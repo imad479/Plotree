@@ -60,3 +60,13 @@ jobs:
         env:
           # Use the same token for authentication
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          - name: Debug Git Status
+  run: |
+    echo "Git status:"
+    git status
+    echo "Git diff:"
+    git diff --cached
+    echo "Git branch:"
+    git branch -a
+    echo "Git remote:"
+    git remote -v

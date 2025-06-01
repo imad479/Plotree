@@ -1,105 +1,62 @@
 name: KoboToolbox Sync
 
 on:
-  workflow_dispatch: # Start with manual triggers only
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout repository
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          token: ${{ secrets.GH_PAT }}
           fetch-depth: 0
-      
-      # Step 2: Setup Python
-      - name: Set up Python 3.11
+          persist-credentials: true  # Critical for push access
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
-      # Step 3: Install dependencies
-      - name: Install required packages
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests pytz
-      
-      # Step 4: Create and run sync script
-      - name: Create and execute sync script
+
+      - name: Install dependencies
+        run: pip install requests pytz
+
+      - name: Run KoboToolbox Sync
         env:
           KOBO_API_TOKEN: ${{ secrets.KOBO_API_TOKEN }}
+        run: python kobo_sync.py
+
+      - name: Verify CSV exists
         run: |
-          cat << 'EOF' > kobo_sync.py
-          import requests
-          import os
-          import json
-          from datetime import datetime, timezone
-          
-          print("=== Kobo Sync Script ===")
-          print("Environment variables:", os.environ.keys())
-          
-          # Configuration
-          KOBO_TOKEN = os.environ.get('KOBO_API_TOKEN')
-          BASE_URL = "https://kf.kobotoolbox.org"
-          
-          if not KOBO_TOKEN:
-              print("❌ ERROR: KOBO_API_TOKEN not found in environment")
-              exit(1)
-              
-          print("✅ KOBO_API_TOKEN found")
-          
-          # Get forms
-          try:
-              headers = {"Authorization": f"Token {KOBO_TOKEN}"}
-              response = requests.get(f"{BASE_URL}/api/v2/assets/", headers=headers)
-              print(f"API Status: {response.status_code}")
-              
-              if response.status_code == 200:
-                  forms = response.json().get('results', [])
-                  print(f"Found {len(forms)} forms")
-                  
-                  # Process first form only for test
-                  if forms:
-                      form = forms[0]
-                      asset_uid = form['uid']
-                      form_name = form['name'].replace(' ', '_')
-                      
-                      # Download data
-                      csv_url = f"{BASE_URL}/api/v2/assets/{asset_uid}/data.csv"
-                      csv_response = requests.get(csv_url, headers=headers)
-                      
-                      if csv_response.status_code == 200:
-                          filename = f"{form_name}.csv"
-                          with open(filename, 'wb') as f:
-                              f.write(csv_response.content)
-                          print(f"✅ Created {filename} ({len(csv_response.content)} bytes)")
-                          print("::set-output name=filename::" + filename)
-                      else:
-                          print(f"❌ CSV download failed: {csv_response.status_code}")
-                  else:
-                      print("⚠️ No forms found")
-              else:
-                  print(f"❌ API request failed: {response.text}")
-          except Exception as e:
-              print(f"🔥 Critical error: {str(e)}")
-          EOF
-          
-          python kobo_sync.py
-      
-      # Step 5: Manual commit as fallback
-      - name: Commit files
+          echo "Current directory: $(pwd)"
+          echo "Files:"
+          ls -la
+          echo "CSV files:"
+          ls *.csv || echo "No CSV files found"
+          echo "File content sample:"
+          head -n 3 *.csv || echo "No CSV content"
+
+      - name: Commit and push changes
         run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git add .
+          # Configure git identity
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
           
-          if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "Automated sync: $(date -u)"
-            git push origin HEAD:${{ github.ref }}
-          else
+          # Add all CSV files
+          git add *.csv
+          
+          # Check if there are changes
+          if git diff-index --quiet HEAD --; then
             echo "No changes to commit"
+          else
+            # Commit changes
+            git commit -m "Automated sync: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            
+            # Push changes
+            git push origin HEAD:${{ github.ref }}
+            echo "Changes pushed successfully"
           fi
         env:
+          # Use the same token for authentication
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
